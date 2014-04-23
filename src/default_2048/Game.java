@@ -3,26 +3,17 @@ package default_2048;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 
-public class Game extends MIDlet implements CommandListener {
+public class Game extends MIDlet{
 
     GameCanvasProxy canvas = new GameCanvasProxy();
     private boolean midletPaused = false;
-
-    Command RIGHT = new Command("RIGHT", Canvas.RIGHT, 1);
-    Command DOWN = new Command("DOWN", Canvas.DOWN, 1);
-    Command LEFT = new Command("LEFT", Canvas.LEFT, 1);
-    Command UP = new Command("UP", Canvas.UP, 1);
 //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
     private Command exitCommand;
 //</editor-fold>//GEN-END:|fields|0|
 
     public Game() {
         this.canvas = new GameCanvasProxy();
-        canvas.addCommand(LEFT);
-        canvas.addCommand(RIGHT);
-        canvas.addCommand(DOWN);
-
-        canvas.setCommandListener(this);
+        canvas.start();
         getDisplay().setCurrent(canvas);
 
     }
@@ -135,11 +126,6 @@ exitCommand = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|18-getter|1|18-po
     }
 
     public void destroyApp(boolean unconditional) {
-    }
-
-    public void commandAction(Command c, Displayable d) {
-
-        canvas.makeMagic(c);
     }
 
 }

@@ -6,7 +6,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.GameCanvas;
 
-public class GameCanvasProxy extends GameCanvas {
+public class GameCanvasProxy extends GameCanvas implements Runnable{
     int canvasHeight = getHeight();
     int score = 0;
     Vector emptyTiles;
@@ -81,7 +81,7 @@ public class GameCanvasProxy extends GameCanvas {
         for (int i = 0; i < itemSize * 5; i += itemSize) {
             graphics.drawLine(0, i, width, i);
         }
-        System.out.println("drawing grid");
+        
         flushGraphics();
     }
 
@@ -237,11 +237,13 @@ public class GameCanvasProxy extends GameCanvas {
     public Graphics getGraphics() {
         return super.getGraphics();
     }
-
-    public void makeMagic(Command c) {
-        System.out.println("inside command listener");
+    int keyStates = 0;
+    int prevKey = 0;
+    public void makeMagic() {
+        prevKey = keyStates;
+        keyStates = getKeyStates();
         moveSuccess = false;
-        int keyStates = getKeyStates();
+        if (prevKey == keyStates) return;
         if ((keyStates & LEFT_PRESSED) != 0) {
             move(MV_LEFT);
         } else if ((keyStates & RIGHT_PRESSED) != 0) {
@@ -252,14 +254,13 @@ public class GameCanvasProxy extends GameCanvas {
             move(MV_DOWN);
         }
 
-        move(c.getCommandType());
-
         emptyTiles.removeAllElements();
         for (int i = 0; i < 16; i++) {
             if (itemGrid[i].number == 0) {
                 emptyTiles.addElement(itemGrid[i]);
             }
         }
+        System.out.println("empty " + emptyTiles.size());
         if (!emptyTiles.isEmpty() && moveSuccess) {
             int rand = randomTile.randomInt(emptyTiles.size());
             itemGrid[((CellItem) emptyTiles.elementAt(rand)).positionInMatrix].number = initNumbers[randomTile.randomInt(2)];
@@ -267,5 +268,21 @@ public class GameCanvasProxy extends GameCanvas {
 
         drawItems();
         //need to paste new elements here
+    }
+    public void start(){
+        Thread t = new Thread(this);
+        t.start();
+        System.out.println("start method");
+        
+    }
+    public void run() {
+        System.out.println("run method");
+        while(true)
+        {
+            makeMagic();
+            try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {}
+        }
     }
 }
